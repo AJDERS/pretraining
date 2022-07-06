@@ -128,14 +128,14 @@ def main(config: DictConfig, **kwargs):
         if "validation" not in raw_datasets.keys():
             raw_datasets["validation"] = load_dataset(
                 data_args.dataset_name,
-                data_args.dataset_config_name,
+                lang=data_args.lang,
                 split=f"train[:{data_args.validation_split_percentage}%]",
                 cache_dir=model_args.cache_dir,
                 use_auth_token=True if model_args.use_auth_token else None,
             )
             raw_datasets["train"] = load_dataset(
                 data_args.dataset_name,
-                data_args.dataset_config_name,
+                lang=data_args.lang,
                 split=f"train[{data_args.validation_split_percentage}%:]",
                 cache_dir=model_args.cache_dir,
                 use_auth_token=True if model_args.use_auth_token else None,
@@ -156,11 +156,8 @@ def main(config: DictConfig, **kwargs):
         "use_auth_token": True if model_args.use_auth_token else None,
     }
 
-    if model_args.model_name_or_path:
-        config = AutoConfig.from_pretrained(model_args.model_name_or_path, **config_kwargs)
-    else:
-        config = CONFIG_MAPPING[model_args.model_type]()
-        logger.warning("You are instantiating a new config instance from scratch.")
+    config = CONFIG_MAPPING[model_args.model_type]()
+    logger.warning("You are instantiating a new config instance from scratch.")
 
 
     tokenizer_kwargs = {
